@@ -1,0 +1,31 @@
+--NBA Data Analysis 
+--SQL Queries 
+
+--Finding Player Points Per Game (Top 50)
+SELECT  PName, POS, Team, (PTS/GP) AS PPG,
+FROM `sharp-arcanum-421619.nba_stats_2023.player_stats_2023`
+ORDER BY PPG DESC
+LIMIT 50
+
+--Finding Each players contribution to the teams total points scored in the season
+SELECT players.PName, players.PTS, players.team, team.points,team.win_percentage (players.PTS/team.points) AS player_point_contr_percentage
+FROM `sharp-arcanum-421619.nba_stats_2023.player_stats_2023` AS players
+LEFT JOIN `sharp-arcanum-421619.nba_stats_2023.team_stats_2023` AS team
+ ON players.Team = team.team_abbr
+ORDER BY player_point_contr_percentage DESC
+
+-- What percentage of scoring per team was from 3 point makes.
+SELECT Team, (three_pointers_made*3) as points_from_3pt, points, ((three_pointers_made*3)/points) AS percentage_of_total_points_from_3pt
+FROM sharp-arcanum-421619.nba_stats_2023.team_stats_2023
+ORDER BY percentage_of_total_points_from_3pt DESC
+
+– Do the teams with more points coming from 3pts have a better win percentage?
+SELECT Team, (three_pointers_made*3) as points_from_3pt, points, ((three_pointers_made*3)/points) AS percentage_of_total_points_from_3pt, win_percentage
+FROM sharp-arcanum-421619.nba_stats_2023.team_stats_2023
+ORDER BY percentage_of_total_points_from_3pt DESC
+
+– Making a table with the lead scorer contribution percentage and the team’s win percentage
+SELECT Team, win_percentage, max(player_point_contr_percentage) as lead_scorer_per
+FROM sharp-arcanum-421619.nba_stats_2023.player_contr_and_win_per
+Group By Team, win_percentage
+ORDER BY lead_scorer_per DESC
